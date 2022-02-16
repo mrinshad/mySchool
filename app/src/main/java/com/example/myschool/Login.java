@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ public class Login extends AppCompatActivity {
     TextView registerPageLink;
     Constants constants = new Constants();
     DatabaseReference mDatabase;
+    ProgressBar progressBar;
 
     private FirebaseAuth mAuth;
 
@@ -43,9 +45,15 @@ public class Login extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-//            reload();
+            reload();
         }
     }
+
+    private void reload() {
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +63,8 @@ public class Login extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         usernameTextInputLayout = (TextInputLayout) findViewById(R.id.usernameFieldLogin);
         passwordTextInputLayout = (TextInputLayout) findViewById(R.id.passwordFieldLogin);
-        registerPageLink = (TextView)  findViewById(R.id.registerPageLink); 
+        registerPageLink = (TextView)  findViewById(R.id.registerPageLink);
+        progressBar = (ProgressBar) findViewById(R.id.loginProgress);
         relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
 
         registerPageLink.setOnClickListener(new View.OnClickListener() {
@@ -70,12 +79,9 @@ public class Login extends AppCompatActivity {
     public void login(View v) {
         String username = usernameTextInputLayout.getEditText().getText().toString();
         String password = passwordTextInputLayout.getEditText().getText().toString();
+        progressBar.setVisibility(View.VISIBLE);
         if (constants.isOnline) {
             mDatabase = FirebaseDatabase.getInstance().getReference();
-//            FirebaseDatabase database = FirebaseDatabase.getInstance();
-//            DatabaseReference myRef = database.getReference("message");
-//            myRef.setValue("Hello, World!");
-
            try {
                mAuth.signInWithEmailAndPassword(username, password)
                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -85,6 +91,7 @@ public class Login extends AppCompatActivity {
                                    // Sign in success, update UI with the signed-in user's information
                                    Log.d(TAG, "signInWithEmail:success");
                                    FirebaseUser user = mAuth.getCurrentUser();
+                                   progressBar.setVisibility(View.INVISIBLE);
                                    Toast.makeText(getApplicationContext(), "Login Successfull", Toast.LENGTH_SHORT).show();
                                    updateUI(user);
                                } else {
