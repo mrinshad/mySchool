@@ -99,6 +99,7 @@ public class Login extends AppCompatActivity {
                                    Log.w(TAG, "signInWithEmail:failure", task.getException());
                                    Toast.makeText(getApplicationContext(), "Authentication failed.",
                                            Toast.LENGTH_SHORT).show();
+                                   progressBar.setVisibility(View.INVISIBLE);
 //                                   updateUI(null);
                                }
                            }
